@@ -8,7 +8,6 @@
 #include <omp.h>
 #include <stdio.h>
 #include <stdlib.h>
-#define N 1048
 
 // SOLUTION:
 // We need to increase the stack size to be large enough that each thread can
@@ -18,6 +17,10 @@
 //
 // ulimit -S -s 65532
 // export OMP_STACKSIZE=40M
+//
+// Alternatively, to make it run as-is, we can just reduce N.
+
+#define N 500
 
 int main (int argc, char *argv[])
 {
