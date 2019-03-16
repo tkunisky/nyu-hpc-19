@@ -1,7 +1,7 @@
 # Set a compiler variable to be able to pass in the arguments needed
 # for using OpenMP with Apple Clang.
-OMP_COMPILER = g++ -Xpreprocessor -fopenmp -lomp
-# OMP_COMPILER = g++ -fopenmp 
+# OMP_COMPILER = g++ -Xpreprocessor -fopenmp -lomp
+OMP_COMPILER = g++ -fopenmp 
 
 ALL_EXECS = \
 	val_test01_solved \
