@@ -1,0 +1,513 @@
+\documentclass[11pt]{article}
+
+% Packages
+\usepackage{courier}
+\usepackage{subfig}
+\usepackage{mathrsfs}
+\usepackage{makecell}
+\usepackage{amscd}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amstext}
+\usepackage[thmmarks,amsthm,amsmath]{ntheorem}
+\usepackage{apptools}
+\usepackage{bbold}
+\usepackage{bm}
+\usepackage{booktabs}
+\usepackage{color}
+\usepackage{easybmat}
+\usepackage{etex}
+\usepackage{framed}
+\usepackage[dvips,letterpaper,margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage[noabbrev,capitalize]{cleveref}
+% \usepackage[lucidasmallscale=true]{lucimatx}
+\usepackage{mathtools}
+\usepackage{colonequals}
+\usepackage{longtable}
+\usepackage{rotating}
+\usepackage{setspace}
+\usepackage{tabu}
+\usepackage{verbatim}
+
+
+\newcommand{\footremember}[2]{%
+    \footnote{#2}
+    \newcounter{#1}
+    \setcounter{#1}{\value{footnote}}%
+}
+\newcommand{\footrecall}[1]{%
+    \footnotemark[\value{#1}]%
+  }
+
+
+% 
+% Theorems
+%
+
+\lstset{basicstyle=\footnotesize\ttfamily\singlespacing,breaklines=true}
+
+  
+\newtheorem{claim}{Claim}[section]
+
+%\definecolor{gray}{rgb}{0.5, 0.5, 0.5}
+%\renewcommand*\FrameCommand{{\color{gray}\vrule width 5pt \hspace{10pt}}}
+ 
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem*{remark}{Remark}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{question}[theorem]{Question}
+\newtheorem{problem}[theorem]{Problem}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{corollary}[theorem]{Corollary}
+\AtAppendix{\renewtheorem{corollary}[theorem]{Corollary}}
+\newtheorem{conjecture}[theorem]{Conjecture}
+
+\crefname{theorem}{Theorem}{Theorems}
+\crefname{proposition}{Proposition}{Propositions}
+\crefname{lemma}{Lemma}{Lemmas}
+
+\theoremstyle{plain} % just in case the style had changed
+\newcommand{\thistheoremname}{}
+\newtheorem*{genericthm}{\thistheoremname}
+\newenvironment{namedtheorem}[1]
+  {\renewcommand{\thistheoremname}{#1}%
+   \begin{genericthm}}
+  {\end{genericthm}}
+
+%
+% Commands
+%
+
+\newcommand{\what}{\widehat}
+
+% Figures
+\newcommand{\fig}[1]{(figure \ref{#1})}
+\newcommand{\FIG}[1]{figure \ref{#1}}
+
+\DeclareSymbolFont{bbold}{U}{bbold}{m}{n}
+\DeclareSymbolFontAlphabet{\mathbbold}{bbold}
+
+% Names
+\newcommand{\Lovasz}{Lov\'{a}sz}
+\newcommand{\Mobius}{M\"{o}bius}
+\newcommand{\Holder}{H\"{o}lder}
+\newcommand{\Rouche}{Rouch\'{e}}
+\newcommand{\Ito}{It\={o}}
+\newcommand{\Kondo}{Kond\^{o}}
+\newcommand{\Levy}{L\'{e}vy}
+\newcommand{\Cramer}{Cram\'{e}r}
+\newcommand{\Godel}{G\"{o}del}
+\newcommand{\Carath}{Carath\'{e}odory}
+\newcommand{\Caratheodory}{Carath\'{e}odory}
+\newcommand{\Schlafli}{Schl\"{a}fli}
+\newcommand{\Hopital}{H\^{o}pital}
+
+% Random
+\newcommand{\lvec}{\overrightarrow}
+\newcommand{\ra}{\rangle}
+\newcommand{\la}{\langle}
+
+% Disjoint union
+\makeatletter
+\def\moverlay{\mathpalette\mov@rlay}
+\def\mov@rlay#1#2{\leavevmode\vtop{%
+   \baselineskip\z@skip \lineskiplimit-\maxdimen
+   \ialign{\hfil$\m@th#1##$\hfil\cr#2\crcr}}}
+\newcommand{\charfusion}[3][\mathord]{
+    #1{\ifx#1\mathop\vphantom{#2}\fi
+        \mathpalette\mov@rlay{#2\cr#3}
+      }
+    \ifx#1\mathop\expandafter\displaylimits\fi}
+\makeatother
+
+\newcommand{\cupdot}{\charfusion[\mathbin]{\cup}{\cdot}}
+\newcommand{\bigcupdot}{\charfusion[\mathop]{\bigcup}{\cdot}}
+
+\renewcommand{\dim}{\mathsf{dim}}
+
+% Blackboard bold
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\QQ}{\mathbb{Q}}
+\newcommand{\NN}{\mathbb{N}}
+\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\DD}{\mathbb{D}}
+\newcommand{\HH}{\mathbb{H}}
+\newcommand{\CC}{\mathbb{C}}
+\newcommand{\PP}{\mathbb{P}}
+\newcommand{\EE}{\mathbb{E}}
+\renewcommand{\AA}{\mathbb{A}}
+\newcommand{\FF}{\mathbb{F}}
+\newcommand{\MM}{\mathbb{M}}
+\renewcommand{\SS}{\mathbb{S}}
+\newcommand{\Fp}{\FF_p}
+\newcommand{\TrivGp}{\mathbbold{1}}
+\newcommand{\One}{\mathbbold{1}}
+
+\newcommand{\RP}{\RR\mathrm{P}}
+\newcommand{\CP}{\CC\mathrm{P}}
+
+% Vector bold
+\newcommand{\bq}{\bm{q}}
+\newcommand{\nn}{\bm{n}}
+\newcommand{\vv}{\bm{v}}
+\newcommand{\ww}{\bm{w}}
+\newcommand{\xx}{\bm{x}}
+\newcommand{\yy}{\bm{y}}
+\newcommand{\one}{\bm{1}}
+
+% Other fonts
+\newcommand{\fp}{\mathfrak{p}}
+\newcommand{\fq}{\mathfrak{q}}
+\newcommand{\fg}{\mathfrak{g}}
+\newcommand{\fh}{\mathfrak{h}}
+\newcommand{\fa}{\mathfrak{a}}
+\newcommand{\fb}{\mathfrak{b}}
+\newcommand{\fc}{\mathfrak{c}}
+\newcommand{\fm}{\mathfrak{m}}
+\renewcommand{\sl}{\mathfrak{sl}}
+\newcommand{\so}{\mathfrak{so}}
+\newcommand{\gl}{\mathfrak{gl}}
+\renewcommand{\sp}{\mathfrak{sp}}
+\newcommand{\sA}{\mathcal{A}}
+\newcommand{\sB}{\mathcal{B}}
+\newcommand{\sC}{\mathcal{C}}
+\newcommand{\sD}{\mathcal{D}}
+\newcommand{\sE}{\mathcal{E}}
+\newcommand{\sF}{\mathcal{F}}
+\newcommand{\sG}{\mathcal{G}}
+\newcommand{\sH}{\mathcal{H}}
+\newcommand{\sI}{\mathcal{I}}
+\newcommand{\sL}{\mathcal{L}}
+\newcommand{\sM}{\mathcal{M}}
+\newcommand{\sN}{\mathcal{N}}
+\newcommand{\sO}{\mathcal{O}}
+\newcommand{\sP}{\mathcal{P}}
+\newcommand{\sR}{\mathcal{R}}
+\newcommand{\sS}{\mathcal{S}}
+\newcommand{\sT}{\mathcal{T}}
+\newcommand{\sU}{\mathcal{U}}
+\newcommand{\sV}{\mathcal{V}}
+\newcommand{\sX}{\mathcal{X}}
+\newcommand{\sY}{\mathcal{Y}}
+
+% Plain text
+\renewcommand{\Re}{\mathrm{Re}}
+\renewcommand{\Im}{\mathrm{Im}}
+
+\newcommand{\Tr}{\mathrm{Tr}}
+
+\newcommand{\img}{\mathrm{img}}
+\renewcommand{\ker}{\mathsf{ker}}
+\newcommand{\sgn}{\mathsf{sgn}}
+
+\newcommand{\ch}{\mathrm{char}}
+\newcommand{\Res}{\mathrm{Res}}
+\newcommand{\ord}{\mathrm{ord}}
+\newcommand{\cont}{\mathrm{cont}}
+\newcommand{\ab}{\mathrm{ab}}
+\newcommand{\Orb}{\mathrm{Orb}}
+\newcommand{\Syl}{\mathrm{Syl}}
+\newcommand{\Irr}{\mathrm{Irr}}
+\newcommand{\Frac}{\mathrm{Frac}}
+\newcommand{\sep}{\mathrm{sep}}
+\newcommand{\per}{\mathrm{per}}
+
+% Groups
+\newcommand{\GL}{\mathrm{GL}}
+\newcommand{\PGL}{\mathrm{PGL}}
+\newcommand{\PSL}{\mathrm{PSL}}
+\newcommand{\SL}{\mathrm{SL}}
+\newcommand{\oO}{\mathrm{O}}
+\newcommand{\SO}{\mathrm{SO}}
+\newcommand{\PSO}{\mathrm{PSO}}
+\newcommand{\Sp}{\mathrm{Sp}}
+\newcommand{\PSp}{\mathrm{PSp}}
+\newcommand{\U}{\mathrm{U}}
+\newcommand{\SU}{\mathrm{SU}}
+\newcommand{\PSU}{\mathrm{PSU}}
+
+% Parentheses
+\newcommand{\lgndr}[2]{\ensuremath{\left(\frac{#1}{#2}\right)}}
+
+% Mappings
+\newcommand{\iso}{\cong}
+\newcommand{\eqdf}{\stackrel{\mathrm{df}}{=}}
+\newcommand{\eqd}{\stackrel{\mathrm{(d)}}{=}}
+\newcommand{\eqqu}{\stackrel{\mathrm{?}}{=}}
+\newcommand{\xto}{\xrightarrow}
+\newcommand{\dto}{\Rightarrow}
+\newcommand{\into}{\hookrightarrow}
+\newcommand{\xinto}{\xhookrightarrow}
+\newcommand{\onto}{\twoheadrightarrow}
+\newcommand{\xonto}{xtwoheadrightarrow}
+\newcommand{\isoto}{\xto{\sim}}
+\newcommand{\upto}{\nearrow}
+\newcommand{\downto}{\searrow}
+
+% Convenience
+\newcommand{\Implies}{\ensuremath{\Rightarrow}}
+\newcommand{\ImpliedBy}{\ensuremath{\Leftarrow}}
+\newcommand{\Iff}{\ensuremath{\Leftrightarrow}}
+
+\newcommand{\Pfright}{\ensuremath{(\Rightarrow):\hs}}
+\newcommand{\Pfleft}{\ensuremath{(\Leftarrow):\hs}}
+
+\newcommand{\sm}{\ensuremath{\setminus}}
+
+\newcommand{\tab}[1]{(table \ref{#1})}
+\newcommand{\TAB}[1]{table \ref{#1}}
+
+\newcommand{\precode}[1]{\textbf{\footnotesize #1}}
+\newcommand{\code}[1]{\texttt{\footnotesize #1}}
+
+\newcommand{\sectionline}{
+  \nointerlineskip \vspace{\baselineskip}
+  \hspace{\fill}\rule{0.35\linewidth}{.7pt}\hspace{\fill}
+  \par\nointerlineskip \vspace{\baselineskip}
+}
+
+
+%
+% Misc
+%
+
+% \parskip0em
+% \linespread{1.05}
+% \widowpenalty10000
+% \clubpenalty10000
+
+
+\renewcommand{\vec}{\mathsf{vec}}
+\renewcommand{\sep}{\mathsf{sep}}
+\newcommand{\rowvec}{\mathsf{rowvec}}
+\newcommand{\row}{\mathsf{row}}
+\newcommand{\HC}{\mathsf{HC}}
+\newcommand{\CHC}{\mathsf{CHC}}
+\newcommand{\SK}{\mathsf{SK}}
+\newcommand{\SDP}{\mathsf{SDP}}
+\newcommand{\SOS}{\mathsf{SOS}}
+\newcommand{\conv}{\mathsf{conv}}
+\newcommand{\Gram}{\mathsf{Gram}}
+\newcommand{\F}{\mathsf{F}}
+\newcommand{\M}{\mathsf{M}}
+\newcommand{\FP}{\mathsf{FP}}
+\newcommand{\PE}{\mathsf{PE}}
+\newcommand{\PM}{\mathsf{PM}}
+\newcommand{\CUT}{\mathsf{CUT}}
+\newcommand{\PS}{\mathsf{PS}}
+\newcommand{\PSF}{\mathsf{PSF}}
+\newcommand{\srg}{\mathsf{srg}}
+\newcommand{\sym}{\mathsf{sym}}
+\newcommand{\herm}{\mathsf{herm}}
+\newcommand{\mat}{\mathsf{mat}}
+\newcommand{\antisym}{\mathsf{antisym}}
+\newcommand{\tEE}{\tilde{\mathbb{E}}}
+\newcommand{\sfP}{\mathsf{P}}
+\DeclareMathOperator*{\argmin}{\arg\!\min}
+\newcommand{\diag}{\mathsf{diag}}
+\newcommand{\op}{\mathsf{op}}
+\newcommand{\rank}{\mathsf{rank}}
+\newcommand{\rk}{\mathsf{rk}}
+\newcommand{\rkeff}{\mathrm{rk}_{\mathrm{eff}}}
+\newcommand{\GOE}{\mathsf{GOE}}
+\newcommand{\ssG}{\mathsf{G}}
+\newcommand{\bA}{\bm A}
+\newcommand{\bB}{\bm B}
+\newcommand{\bC}{\bm C}
+\newcommand{\bD}{\bm D}
+\newcommand{\bE}{\bm E}
+\newcommand{\bF}{\bm F}
+\newcommand{\bG}{\bm G}
+\newcommand{\bH}{\bm H}
+\newcommand{\bL}{\bm L}
+\newcommand{\bM}{\bm M}
+\newcommand{\bN}{\bm N}
+\newcommand{\bP}{\bm P}
+\newcommand{\bQ}{\bm Q}
+\newcommand{\bR}{\bm R}
+\newcommand{\bS}{\bm S}
+\newcommand{\bT}{\bm T}
+\newcommand{\bU}{\bm U}
+\newcommand{\bV}{\bm V}
+\newcommand{\bW}{\bm W}
+\newcommand{\bX}{\bm X}
+\newcommand{\bY}{\bm Y}
+\newcommand{\bZ}{\bm Z}
+\newcommand{\ba}{\bm a}
+\newcommand{\bb}{\bm b}
+\newcommand{\bc}{\bm c}
+\newcommand{\bd}{\bm d}
+\newcommand{\be}{\bm e}
+\newcommand{\bg}{\bm g}
+\newcommand{\bh}{\bm h}
+\newcommand{\bi}{\bm i}
+\newcommand{\bj}{\bm j}
+\newcommand{\br}{\bm r}
+\newcommand{\bs}{\bm s}
+\newcommand{\hbr}{\hat{\bm r}}
+\newcommand{\hbs}{\hat{\bm s}}
+\newcommand{\bt}{\bm t}
+\newcommand{\bu}{\bm u}
+\newcommand{\bv}{\bm v}
+\newcommand{\bw}{\bm w}
+\newcommand{\bx}{\bm x}
+\newcommand{\by}{\bm y}
+\newcommand{\bz}{\bm z}
+
+\newcommand{\T}{\mathsf{T}}
+\newcommand{\Paley}{\mathsf{Paley}}
+\newcommand{\Johnson}{\mathsf{Johnson}}
+\newcommand{\OA}{\mathsf{OA}}
+\newcommand{\VO}{\mathsf{VO}}
+\newcommand{\RSHCD}{\mathsf{RSHCD}}
+
+\newcommand{\fB}{\mathscr{B}}
+\newcommand{\fC}{\mathscr{C}}
+\newcommand{\fE}{\mathscr{E}}
+
+\newcommand{\odd}{\mathsf{odd}}
+
+\newcommand{\GramSDP}{\mathsf{GramSDP}}
+\newcommand{\ptop}{\mathsf{\Gamma}}
+
+\newcommand{\pert}{\mathsf{pert}}
+
+\DeclareRobustCommand{\bmrob}[1]{\bm{#1}}
+\pdfstringdefDisableCommands{%
+  \renewcommand{\bmrob}[1]{#1}%
+}
+
+\title{High Performance Computing: Homework 2} 
+\author{Dmitriy (Tim) Kunisky [dk3105]}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{itemize}
+\item Processor: Intel(R) Core(TM) i5-5257U CPU @ 2.70GHz
+    \begin{itemize}
+    \item Maximum flop rate: 19.76 Gflop/s, or 4.94 Gflop/s per core
+    \item Maximum main memory bandwidth: 25.6 GB/s
+    \end{itemize}
+\item Compiler: Apple LLVM version 9.1.0 (clang-902.0.39.2)
+\end{itemize}
+
+\subsection*{Problem 2: Matrix-Matrix Multiplication}
+
+\paragraph{Loop orderings.}
+The fastest loop order appears to be $(j, p, i)$, corresponding
+to traversing columns with temporal locality as much as possible (since traversing
+the $i$ index traverses a column of both $\bm A$ and $\bm C$, traversing the
+$p$ index traverses a column of $\bm B$ and a row of $\bm A$, and traversing the
+$j$ index traverses a row of both $\bm B$ and $\bm C$).
+We then expect the most harmful changes to this ordering to be those that move
+column traversals earlier in the loop order.
+Thus, the costliest ordering should be the reverse, $(i, p, j)$, while orderings
+like $(j, i, p)$ should be intermediate.
+The table below illustrates that this is indeed the case.
+
+\begin{center}
+\small
+\begin{tabular}{r|rr|rr|rr}
+  & \multicolumn{2}{c|}{Ordering $(j, p, i)$} & \multicolumn{2}{c|}{Ordering $(j, i, p)$} & \multicolumn{2}{c}{Ordering $(i, p, j)$} \\
+  \hline
+  Dimension & \makecell{Flop Rate \\ (Gflop/s)} & \makecell{Bandwidth \\ (GB/s)} & \makecell{Flop Rate \\ (Gflop/s)} & \makecell{Bandwidth \\ (GB/s)} & \makecell{Flop Rate \\ (Gflop/s)} & \makecell{Bandwidth \\ (GB/s)} \\
+  \hline
+  16 & 5.93 & 94.82 & 2.53 & 40.51 & 2.62 & 41.94 \\
+  112 & 9.62 & 154.00 & 1.83 & 29.23 & 1.54 & 24.70 \\
+  304 & 7.79 & 124.64 & 0.91 & 26.98 & 0.77 & 12.34 \\
+  640 & 5.66 & 90.64 & 0.82 & 13.15 & 0.65 & 10.43 \\
+  976 & 4.38 & 70.05 & 0.87 & 13.90 & 0.38 & 6.05 \\
+  1408 & 4.17 & 66.71 & 0.69 & 11.12 & 0.19 & 3.07 \\
+  \hline
+\end{tabular}
+\end{center}
+
+\paragraph{Block size tuning.}
+
+It appears that the optimal block size is around 60.
+One possible justification for this is that the processor used for these tests has a Level 1 cache of size 64KB.
+If the block size is $B$, then the number of bytes required to store two $B \times B$ arrays of doubles (the size of the data on which arithmetic is being performed in one block matrix operation) is $2 \cdot 8 \cdot B^2$, which is smaller than 64KB only while $B \leq 60$ (over values of $B$ divisible by 4).
+The figures in the table below support this heuristic calculation.
+
+\begin{center}
+\small
+\begin{tabular}{r|rr|rr|rr}
+  & \multicolumn{2}{c|}{$B = 40$} & \multicolumn{2}{c|}{$B = 60$} & \multicolumn{2}{c}{$B = 80$} \\
+  \hline
+  Dimension & \makecell{Flop Rate \\ (Gflop/s)} & \makecell{Bandwidth \\ (GB/s)} & \makecell{Flop Rate \\ (Gflop/s)} & \makecell{Bandwidth \\ (GB/s)} & \makecell{Flop Rate \\ (Gflop/s)} & \makecell{Bandwidth \\ (GB/s)} \\
+  \hline
+  240 & 4.69 & 75.05 & 8.95 & 143.26 & 9.12 & 145.91 \\
+  480 & 5.37 & 85.93 & 8.79 & 140.78 & 7.92 & 126.78 \\
+  720 & 5.28 & 84.55 & 8.68 & 138.85 & 8.38 & 134.07 \\
+  960 & 5.26 & 84.20 & 8.80 & 140.82 & 6.52 & 104.37 \\
+  1200 & 5.41 & 86.48 & 8.33 & 133.21 & 6.84 & 109.41 \\
+  1440 & 5.19 & 82.97 & 8.56 & 137.01 & 7.44 & 119.04 \\
+  1680 & 5.31 & 85.03 & 8.16 & 130.55 & 6.87 & 109.91 \\
+  \hline
+\end{tabular}
+\end{center}
+
+\paragraph{Parallelization.}
+
+Finally, we parallelize our implementation by simply using the parallelized for loop directive of OpenMP on the top-level block iteration.
+This roughly doubles the flop rate, which corresponds to this processor having two cores.
+With this optimization, the matrix multiplication reaches a flop rate of slightly more than 17 Gflop/s, which is approximately 86\% of the peak flop rate of 19.76 Gflop/s.
+
+\begin{center}
+\small
+\begin{tabular}{r|rr|rr}
+  & \multicolumn{2}{c|}{$B = 60$, Serial} & \multicolumn{2}{c}{$B = 60$, Parallel} \\
+  \hline
+  Dimension & \makecell{Flop Rate \\ (Gflop/s)} & \makecell{Bandwidth \\ (GB/s)} & \makecell{Flop Rate \\ (Gflop/s)} & \makecell{Bandwidth \\ (GB/s)} \\
+  \hline
+  240 & 8.95 & 143.26 & 19.68 & 314.86 \\
+  480 & 8.79 & 140.78 & 18.41 & 310.60 \\
+  720 & 8.68 & 138.85 & 18.68 & 298.84 \\
+  960 & 8.80 & 140.82 & 17.01 & 272.16 \\
+  1200 & 8.33 & 133.21 & 17.85 & 285.60 \\
+  1440 & 8.56 & 137.01 & 17.59 & 281.39 \\
+  1680 & 8.16 & 130.55 & 17.24 & 275.79 \\
+  \hline
+\end{tabular}
+\end{center}
+
+\subsection*{Problem 4: Jacobi/Gauss-Seidel Smoothing}
+
+We present timing results for varying problem sizes of the Jacobi and Gauss-Seidel smoothers, for one, two, and four threads.
+The machine used has two cores, so we expect to see a benefit from two threads versus one, but no additional benefit from four threads versus two.
+The results below support this claim; for large problems, the speed roughly doubles from moving from one to two threads, but there is no effect from moving from two to four threads.
+
+\begin{center}
+\small
+\begin{tabular}{r|rrr|rrr}
+  & \multicolumn{3}{c|}{Jacobi} & \multicolumn{3}{c}{Gauss-Seidel} \\
+  \hline
+  N & 1 Thread & 2 Threads & 4 Threads & 1 Thread & 2 Threads & 4 Threads \\
+  \hline
+  50 & 0.15 & 0.19 & 0.18 & 0.25 & 0.20 & 0.28 \\
+  100 & 0.55 & 0.34 & 0.35 & 0.90 & 0.57 & 0.65 \\
+  150 & 1.35 & 0.68 & 0.84 & 2.03 & 1.10 & 1.22 \\
+  200 & 2.28 & 1.13 & 1.51 & 3.54 & 2.01 & 2.20 \\
+  300 & 5.03 & 2.70 & 3.39 & 7.89 & 4.18 & 4.38 \\
+  400 & 10.46 & 7.86 & 7.64 & 17.31 & 7.74 & 8.05 \\
+  \hline
+\end{tabular}
+\end{center}
+
+\noindent
+(Note that running the parallel version of either algorithm is implemented by passing an arbitrary third argument to the executable, as shown in the top comment of either source file.)
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "SemidefiniteProgramming_Kunisky"
+%%% End:
