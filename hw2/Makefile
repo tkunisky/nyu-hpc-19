@@ -10,7 +10,8 @@ ALL_EXECS = \
 	omp_solved3 \
 	omp_solved4 \
 	omp_solved5 \
-	omp_solved6
+	omp_solved6 \
+	MMult1
 
 all: $(ALL_EXECS)
 
@@ -34,6 +35,9 @@ omp_solved5: omp_solved5.cpp
 
 omp_solved6: omp_solved6.cpp
 	$(OMP_COMPILER) -g $< -o $@
+
+MMult1: MMult1.cpp
+	$(OMP_COMPILER) -O2 -march=native -std=c++11 $< -o $@
 
 clean:
 	rm $(ALL_EXECS)
