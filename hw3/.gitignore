@@ -1,0 +1,11 @@
+*
+
+!*.h
+!*.cpp
+!Makefile
+!.gitignore
+
+!*.tex
+!*.pdf
+
+*.dSYM
