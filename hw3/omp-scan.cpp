@@ -38,7 +38,7 @@ void scan_omp(long* prefix_sum, const long* A, long n) {
       } else {
         prefix_sum[segment_start] = 0;
       }
-      for (int i = segment_start + 1; i < segment_end; i++) {
+      for (long i = segment_start + 1; i < segment_end; i++) {
         prefix_sum[i] = prefix_sum[i - 1] + A[i - 1];
       }
     }
@@ -52,7 +52,7 @@ void scan_omp(long* prefix_sum, const long* A, long n) {
       segment_end = n;
     }
 
-    for (int i = segment_start; i < segment_end; i++) {
+    for (long i = segment_start; i < segment_end; i++) {
       prefix_sum[i] += prefix_sum[segment_start - 1];
     }
   }

@@ -408,7 +408,7 @@ The resulting function is roughly four times faster than the reference implement
 \subsection*{Problem 2: Parallel Scan}
 
 To parallelize the scan routine over $p$ threads, I divide the input array (of length $N$) into $p - 1$ parts of length $\lceil \frac{N}{p} \rceil$, and one part containing the remaining entries (possibly having slightly smaller length if $N$ is not divisible by $p$).
-Then, as suggested in the problem, perform the prefix sum calculation in parallel for each of these segments, and then correct with one final serial scan.
+Then, as suggested in the problem, I perform the prefix sum calculation in parallel for each of these segments, and then correct with one final serial scan.
 The timing results are presented below for the serial implementation and $p \in \{1, 2, 3, 4\}$ when $N = 10^8$.
 
 \begin{center}
@@ -426,7 +426,7 @@ The timing results are presented below for the serial implementation and $p \in 
 \end{center}
 
 \noindent
-The efficiency gradually improves with the number of threads, reaching approximately a 40\% improvement with four threads.
+The efficiency gradually improves with the number of threads, reaching an improvement of approximately 40\% over the serial or single-threaded version when four threads are used.
 This is reasonable to expect, since we always retain the overhead of the final serial correction which is not parallelized.
 
 \end{document}
