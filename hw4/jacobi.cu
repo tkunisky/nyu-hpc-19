@@ -118,7 +118,7 @@ __global__ void jacobi_kernel(double* u, const double* f, const double* u_prev, 
       val_right = u_prev[i * N + (j + 1)];
     }
 
-    u[N * j + i] = 0.25 * (h_sq * f[N * j + i] + val_up + val_down + val_left + val_right);
+    u[N * i + j] = 0.25 * (h_sq * f[N * i + j] + val_up + val_down + val_left + val_right);
   }
 }
 
