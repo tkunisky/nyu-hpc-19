@@ -73,19 +73,21 @@ __global__ void matrix_vector_kernel(double* Ax, const double* A, const double* 
 }
 
 int main() {
-  long N = (1UL<<10);
+  long N = (1UL<<12);
 
   double *A, *x, *A_d, *x_d, *Ax_d, *Ax_ref, *Ax;
 
   // Initialize vector and matrix
   cudaMallocHost((void**)&A, N * N * sizeof(double));
   cudaMallocHost((void**)&x, N * sizeof(double));
-  #pragma omp parallel for schedule(static)
+
+  # pragma omp parallel for schedule(static)
   for (long i = 0; i < N; i++) {
     x[i] = drand48();
-    for (long j = 0; j < N; j++) {
-      A[i * N + j] = drand48();
-    }
+  }
+  # pragma omp parallel for schedule(static)
+  for (long i = 0; i < N * N; i++) {
+    A[i] = drand48();
   }
 
   // Get reference product
