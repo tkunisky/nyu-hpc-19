@@ -69,6 +69,8 @@ __global__ void pointwise_mult_kernel(double* xy, const double* x, const double*
 // Wrapper for inner product kernel
 void inner_product(double* ip, double* x, double* y, long N) {
   double *x_d, *y_d, *xy_d, *z_d;
+
+  cudaMalloc(&xy_d, N*sizeof(double));
   cudaMalloc(&x_d, N*sizeof(double));
   cudaMalloc(&y_d, N*sizeof(double));
 
@@ -91,11 +93,12 @@ void inner_product(double* ip, double* x, double* y, long N) {
 
   double* ip_d = z_d;
   long Nb = (N + BLOCK_SIZE - 1) / (BLOCK_SIZE);
-  reduction_kernel<<<Nb,BLOCK_SIZE>>>(z_d, xy_d, N);
+  reduction_kernel<<<Nb,BLOCK_SIZE>>>(ip_d, xy_d, N);
   while (Nb > 1) {
     long this_N = Nb;
     Nb = (Nb + BLOCK_SIZE - 1) / (BLOCK_SIZE);
-    reduction_kernel<<<Nb,BLOCK_SIZE>>>(z_d + Nb, z_d, this_N);
+    reduction_kernel<<<Nb,BLOCK_SIZE>>>(ip_d + Nb, ip_d, this_N);
+    ip_d += N;
   }
 
   cudaMemcpyAsync(ip, z_d, 1*sizeof(double), cudaMemcpyDeviceToHost);
@@ -103,6 +106,7 @@ void inner_product(double* ip, double* x, double* y, long N) {
 
   cudaFree(x_d);
   cudaFree(y_d);
+  cudaFree(xy_d);
   cudaFree(z_d);
 }
 
