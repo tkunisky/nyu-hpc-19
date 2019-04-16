@@ -76,7 +76,7 @@ __global__ void matrix_vector_kernel(double* Ax, const double* A, const double* 
 int main() {
   long N = (1UL<<10);
 
-  double *A, *x, *A_d, *x_d, *Ax_ref, *Ax;
+  double *A, *x, *A_d, *x_d, *Ax_d, *Ax_ref, *Ax;
 
   // Initialize vector and matrix
   cudaMallocHost((void**)&A, N * N * sizeof(double));
@@ -84,7 +84,7 @@ int main() {
   #pragma omp parallel for schedule(static)
   for (long i = 0; i < N; i++) {
     x[i] = drand48();
-    for long(j = 0; j < N; j++) {
+    for (long j = 0; j < N; j++) {
       A[i * N + j] = drand48();
     }
   }
@@ -98,6 +98,7 @@ int main() {
   // Get GPU product
   cudaMalloc(&A_d, N*N*sizeof(double));
   cudaMalloc(&x_d, N*sizeof(double));
+  cudaMalloc(&Ax_d, N*sizeof(double));
   cudaMallocHost(&Ax, N*sizeof(double));
 
   cudaMemcpyAsync(A_d, A, N*N*sizeof(double), cudaMemcpyHostToDevice);
@@ -105,7 +106,9 @@ int main() {
   cudaDeviceSynchronize();
 
   tt = omp_get_wtime();
-  matrix_vector(Ax, A, x, N);
+  matrix_vector_kernel<<<N/BLOCK_SIZE+1,BLOCK_SIZE>>>(Ax_d, A_d, x_d, N);
+  cudaMemcpyAsync(Ax, Ax_d, N*sizeof(double), cudaMemcpyHostToDevice);
+  cudaDeviceSynchronize();
   printf("GPU Bandwidth = %f GB/s\n", 2*N*N*sizeof(double) / (omp_get_wtime()-tt)/1e9);
 
   double err = 0;
@@ -117,6 +120,7 @@ int main() {
   // Cleanup
   cudaFree(A_d);
   cudaFree(x_d);
+  cudaFree(Ax_d);
   cudaFreeHost(A);
   cudaFreeHost(x);
   cudaFreeHost(Ax);
