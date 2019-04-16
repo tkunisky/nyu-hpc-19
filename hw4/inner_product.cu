@@ -92,7 +92,7 @@ void inner_product(double* ip, const double* x_d, const double* y_d, long N) {
   while (Nb > 1) {
     long this_N = Nb;
     Nb = (Nb + BLOCK_SIZE - 1) / (BLOCK_SIZE);
-    reduction_kernel<<<Nb,BLOCK_SIZE>>>(ip_d + Nb, ip_d, this_N);
+    reduction_kernel<<<Nb,BLOCK_SIZE>>>(ip_d + this_N, ip_d, this_N);
     ip_d += this_N;
   }
 
