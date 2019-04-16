@@ -96,7 +96,7 @@ void jacobi_iters_par(int N, int iters, double* f, double* u_prev, double* u) {
   swap(&u, &u_prev);
 }
 
-#define BLOCK_SIZE 1024
+#define BLOCK_SIZE 32
 
 __global__ void jacobi_kernel(double* u, const double* f, const double* u_prev, double h_sq, long N) {
   int i = blockIdx.x * blockDim.x + threadIdx.x;
@@ -185,14 +185,13 @@ int main(int argc, char** argv) {
   printf("Final residual:   %3f\n", residual(N, u, f));
   printf("Time (seconds):   %3f\n\n", time);
 
+  free(u_prev);
   free(u);
 
   // GPU calculation
   cudaMallocHost(&u, N*N*sizeof(double));
   for (int i = 0; i < N * N; i++) {
-    u_prev[i] = 0.0;
     u[i] = 0.0;
-    f[i] = 1.0;
   }
 
   printf("GPU:\n");
