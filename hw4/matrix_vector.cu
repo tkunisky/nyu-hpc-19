@@ -63,7 +63,7 @@ void matrix_vector_ref(double* Ax_ref, const double* A, const double* x, long N)
 
 // Kernel for matrix-vector product per result entry
 __global__ void matrix_vector_kernel(double* Ax, const double* A, const double* x, long N) {
-  idx = blockIdx.x * blockDim.x + threadIdx.x;
+  int idx = blockIdx.x * blockDim.x + threadIdx.x;
 
   if (idx < N) {
     Ax[idx] = 0;
@@ -71,25 +71,6 @@ __global__ void matrix_vector_kernel(double* Ax, const double* A, const double* 
       Ax[idx] += A[idx * N + j] * x[j];
     }
   }
-}
-
-// Wrapper for matrix-vector multiplication
-void matrix_vector(double* Ax, const double* A_d, const double* x_d, long N) {
-  double* ip_d = z_d;
-  long Nb = (N + BLOCK_SIZE - 1) / (BLOCK_SIZE);
-  reduction_kernel<<<Nb,BLOCK_SIZE>>>(ip_d, xy_d, N);
-  while (Nb > 1) {
-    long this_N = Nb;
-    Nb = (Nb + BLOCK_SIZE - 1) / (BLOCK_SIZE);
-    reduction_kernel<<<Nb,BLOCK_SIZE>>>(ip_d + this_N, ip_d, this_N);
-    ip_d += this_N;
-  }
-
-  cudaMemcpyAsync(ip, ip_d, 1*sizeof(double), cudaMemcpyDeviceToHost);
-  cudaDeviceSynchronize();
-
-  cudaFree(xy_d);
-  cudaFree(z_d);
 }
 
 int main() {
@@ -134,7 +115,7 @@ int main() {
   printf("Error = %f\n", err);
 
   // Cleanup
-  cudaFree(Ax_d);
+  cudaFree(A_d);
   cudaFree(x_d);
   cudaFreeHost(A);
   cudaFreeHost(x);
