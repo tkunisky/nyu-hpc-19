@@ -113,7 +113,7 @@ int main() {
 
   double err = 0;
   for (long i = 0; i < N; i++) {
-    err += (Ax_ref[i] - Ax[i]) * (Ax_ref[i] - Ax[i])
+    err += (Ax_ref[i] - Ax[i]) * (Ax_ref[i] - Ax[i]);
   }
   printf("Error = %f\n", err);
 
