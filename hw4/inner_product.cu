@@ -68,9 +68,15 @@ __global__ void pointwise_mult_kernel(double* xy, const double* x, const double*
 
 // Wrapper for inner product kernel
 void inner_product(double* ip, const double* x_d, const double* y_d, long N) {
-  double *xy_d, *z_d;
+  double *x, *y, *xy_d, *z_d;
 
+  cudaMalloc(&x_d, N*sizeof(double));
+  cudaMalloc(&y_d, N*sizeof(double));
   cudaMalloc(&xy_d, N*sizeof(double));
+
+  cudaMemcpyAsync(x_d, x, N*sizeof(double), cudaMemcpyHostToDevice);
+  cudaMemcpyAsync(y_d, y, N*sizeof(double), cudaMemcpyHostToDevice);
+  cudaDeviceSynchronize();
 
   // Extra memory buffer for reduction across thread-blocks
   long N_work = 1;
@@ -80,9 +86,6 @@ void inner_product(double* ip, const double* x_d, const double* y_d, long N) {
     N_work += i;
   }
   cudaMalloc(&z_d, N_work*sizeof(double));
-
-  // cudaMemcpyAsync(z_d, y, N*sizeof(double), cudaMemcpyHostToDevice);
-  // cudaDeviceSynchronize();
 
   pointwise_mult_kernel<<<N/BLOCK_SIZE+1,BLOCK_SIZE>>>(xy_d, x_d, y_d, N);
 
@@ -99,6 +102,8 @@ void inner_product(double* ip, const double* x_d, const double* y_d, long N) {
   cudaMemcpyAsync(ip, ip_d, 1*sizeof(double), cudaMemcpyDeviceToHost);
   cudaDeviceSynchronize();
 
+  cudaFree(x_d);
+  cudaFree(y_d);
   cudaFree(xy_d);
   cudaFree(z_d);
 }
@@ -106,8 +111,9 @@ void inner_product(double* ip, const double* x_d, const double* y_d, long N) {
 int main() {
   long N = (1UL<<15);
 
-  double *x, *y, *x_d, *y_d;
+  double *x_d, *y_d;
 
+  // Initialize vectors
   cudaMallocHost((void**)&x, N * sizeof(double));
   cudaMallocHost((void**)&y, N * sizeof(double));
   #pragma omp parallel for schedule(static)
@@ -116,26 +122,20 @@ int main() {
     y[i] = drand48();
   }
 
+  // Get reference inner product
   double ip_ref, ip;
   double tt = omp_get_wtime();
   inner_product_ref(&ip_ref, x, y, N);
   printf("CPU Bandwidth = %f GB/s\n", 2*N*sizeof(double) / (omp_get_wtime()-tt)/1e9);
   tt = omp_get_wtime();
 
-  cudaMalloc(&x_d, N*sizeof(double));
-  cudaMalloc(&y_d, N*sizeof(double));
-  cudaMemcpyAsync(x_d, x, N*sizeof(double), cudaMemcpyHostToDevice);
-  cudaMemcpyAsync(y_d, y, N*sizeof(double), cudaMemcpyHostToDevice);
-  cudaDeviceSynchronize();
-
+  // Get GPU inner product
   tt = omp_get_wtime();
   inner_product(&ip, x_d, y_d, N);
   printf("GPU Bandwidth = %f GB/s\n", 2*N*sizeof(double) / (omp_get_wtime()-tt)/1e9);
   printf("Error = %f\n", fabs(ip - ip_ref));
 
-  cudaFree(x_d);
-  cudaFree(y_d);
-
+  // Cleanup
   cudaFreeHost(x);
   cudaFreeHost(y);
 
