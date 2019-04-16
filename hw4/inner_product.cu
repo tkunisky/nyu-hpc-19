@@ -18,11 +18,10 @@ void Check_CUDA_Error(const char *message){
 #define BLOCK_SIZE 1024
 
 // Reduction kernel for sum
-__global__ void reduction_kernel(double* sum, const double* a, long N, long m) {
+__global__ void reduction_kernel(double* sum, const double* a, long N) {
 	__shared__ double smem[BLOCK_SIZE];
 	int idx = (blockIdx.x) * blockDim.x + threadIdx.x;
-	int idx_y = blockIdx.y;
-	if (idx < N) smem[threadIdx.x] = a[m*idx + idx_y];
+	if (idx < N) smem[threadIdx.x] = a[idx];
 	else smem[threadIdx.x] = 0;
 
 	__syncthreads();
@@ -46,7 +45,7 @@ __global__ void reduction_kernel(double* sum, const double* a, long N, long m) {
 		smem[threadIdx.x] += smem[threadIdx.x + 2];
 		__syncwarp();
 		if (threadIdx.x == 0) {
-			sum[m*blockIdx.x + idx_y] = smem[0] + smem[1];
+			sum[blockIdx.x] = smem[0] + smem[1];
 		}
 	}
 }
@@ -59,46 +58,11 @@ void inner_product_ref(double* ip_ptr, const double* a, const double* b, long N)
   *ip_ptr = sum;
 }
 
-
-
-// GPU inner product kernel
-__global__ void inner_product_kernel(double* ip, const double* a, const double* b, long N){
-  __shared__ double smem[BLOCK_SIZE];
-  int idx = (blockIdx.x) * blockDim.x + threadIdx.x;
-
-  if (idx < N) {
-    smem[threadIdx.x] = a[idx] * b[idx];
-  }
-
-  __syncthreads();
-  if (threadIdx.x < 512) smem[threadIdx.x] += smem[threadIdx.x + 512];
-  __syncthreads();
-  if (threadIdx.x < 256) smem[threadIdx.x] += smem[threadIdx.x + 256];
-  __syncthreads();
-  if (threadIdx.x < 128) smem[threadIdx.x] += smem[threadIdx.x + 128];
-  __syncthreads();
-  if (threadIdx.x <  64) smem[threadIdx.x] += smem[threadIdx.x +  64];
-  __syncthreads();
-  if (threadIdx.x <  32) {
-    smem[threadIdx.x] += smem[threadIdx.x +  32];
-    __syncwarp();
-    smem[threadIdx.x] += smem[threadIdx.x +  16];
-    __syncwarp();
-    smem[threadIdx.x] += smem[threadIdx.x +   8];
-    __syncwarp();
-    smem[threadIdx.x] += smem[threadIdx.x +   4];
-    __syncwarp();
-    smem[threadIdx.x] += smem[threadIdx.x +   2];
-    __syncwarp();
-    if (threadIdx.x == 0) ip[blockIdx.x] = smem[0] + smem[1];
-  }
-}
-
 // Pointwise multiplication kernel
-__global__ void pointwise_mult_kernel(double* c, const double* a, const double* c, long N) {
+__global__ void pointwise_mult_kernel(double* xy, const double* x, const double* y, long N) {
   int idx = (blockIdx.x) * blockDim.x + threadIdx.x;
   if (idx < N) {
-    c[idx] = a[idx] * b[idx];
+    xy[idx] = x[idx] * y[idx];
   }
 }
 
@@ -131,7 +95,7 @@ void inner_product(double* ip, double* x, double* y, long N) {
   while (Nb > 1) {
     long this_N = Nb;
     Nb = (Nb + BLOCK_SIZE - 1) / (BLOCK_SIZE);
-    inner_product_kernel<<<Nb,BLOCK_SIZE>>>(z_d + Nb, z_d, this_N);
+    reduction_kernel<<<Nb,BLOCK_SIZE>>>(z_d + Nb, z_d, this_N);
   }
 
   cudaMemcpyAsync(ip, z_d, 1*sizeof(double), cudaMemcpyDeviceToHost);
