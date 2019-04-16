@@ -67,16 +67,10 @@ __global__ void pointwise_mult_kernel(double* xy, const double* x, const double*
 }
 
 // Wrapper for inner product kernel
-void inner_product(double* ip, const double* x, const double* y, long N) {
-  double *x_d, *y_d, *xy_d, *z_d;
+void inner_product(double* ip, const double* x_d, const double* y_d, long N) {
+  double *xy_d, *z_d;
 
-  cudaMalloc(&x_d, N*sizeof(double));
-  cudaMalloc(&y_d, N*sizeof(double));
   cudaMalloc(&xy_d, N*sizeof(double));
-
-  cudaMemcpyAsync(x_d, x, N*sizeof(double), cudaMemcpyHostToDevice);
-  cudaMemcpyAsync(y_d, y, N*sizeof(double), cudaMemcpyHostToDevice);
-  cudaDeviceSynchronize();
 
   // Extra memory buffer for reduction across thread-blocks
   long N_work = 1;
@@ -102,8 +96,6 @@ void inner_product(double* ip, const double* x, const double* y, long N) {
   cudaMemcpyAsync(ip, ip_d, 1*sizeof(double), cudaMemcpyDeviceToHost);
   cudaDeviceSynchronize();
 
-  cudaFree(x_d);
-  cudaFree(y_d);
   cudaFree(xy_d);
   cudaFree(z_d);
 }
@@ -111,7 +103,7 @@ void inner_product(double* ip, const double* x, const double* y, long N) {
 int main() {
   long N = (1UL<<15);
 
-  double *x, *y;
+  double *x, *y, *x_d, *y_d;
 
   // Initialize vectors
   cudaMallocHost((void**)&x, N * sizeof(double));
@@ -130,12 +122,21 @@ int main() {
   tt = omp_get_wtime();
 
   // Get GPU inner product
+  cudaMalloc(&x_d, N*sizeof(double));
+  cudaMalloc(&y_d, N*sizeof(double));
+
+  cudaMemcpyAsync(x_d, x, N*sizeof(double), cudaMemcpyHostToDevice);
+  cudaMemcpyAsync(y_d, y, N*sizeof(double), cudaMemcpyHostToDevice);
+  cudaDeviceSynchronize();
+
   tt = omp_get_wtime();
-  inner_product(&ip, x, y, N);
+  inner_product(&ip, x_d, y_d, N);
   printf("GPU Bandwidth = %f GB/s\n", 2*N*sizeof(double) / (omp_get_wtime()-tt)/1e9);
   printf("Error = %f\n", fabs(ip - ip_ref));
 
   // Cleanup
+  cudaFree(x_d);
+  cudaFree(y_d);
   cudaFreeHost(x);
   cudaFreeHost(y);
 
