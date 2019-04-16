@@ -18,7 +18,7 @@ void Check_CUDA_Error(const char *message){
 #define BLOCK_SIZE 1024
 
 // CPU inner product implementation
-void inner_product_ref(double* ip_ptr, const double* a, const double* b){
+void inner_product_ref(double* ip_ptr, const double* a, const double* b, long N) {
   double sum = 0;
   #pragma omp parallel for schedule(static) reduction(+:sum)
   for (long i = 0; i < N; i++) sum += a[i] * b[i];
@@ -59,7 +59,7 @@ __global__ void inner_product_kernel(double* ip, const double* a, const double* 
 }
 
 // Wrapper for inner product kernel
-void inner_product(double* ip, double* a, double* b, long N) {
+void inner_product(double* ip, double* x, double* y, long N) {
   double *x_d, *y_d, *z_d;
   cudaMalloc(&x_d, N*sizeof(double));
   cudaMalloc(&y_d, N*sizeof(double));
@@ -75,7 +75,7 @@ void inner_product(double* ip, double* a, double* b, long N) {
 
   cudaMemcpyAsync(x_d, x, N*sizeof(double), cudaMemcpyHostToDevice);
   cudaMemcpyAsync(y_d, y, N*sizeof(double), cudaMemcpyHostToDevice);
-  cudaMemcpyAsync(z_d, y, N*sizeof(double), cudaMemcpyHostToDevice);
+  // cudaMemcpyAsync(z_d, y, N*sizeof(double), cudaMemcpyHostToDevice);
   cudaDeviceSynchronize();
 
   double* ip_d = z_d;
@@ -84,10 +84,10 @@ void inner_product(double* ip, double* a, double* b, long N) {
   while (Nb > 1) {
     long this_N = Nb;
     Nb = (Nb + BLOCK_SIZE - 1) / (BLOCK_SIZE);
-    inner_product_kernel<<<Nb,BLOCK_SIZE>>>(ip_d + Nb, ip_d, N);
+    inner_product_kernel<<<Nb,BLOCK_SIZE>>>(ip_d + Nb, ip_d, this_N);
   }
 
-  cudaMemcpyAsync(&sum, sum_d, 1*sizeof(double), cudaMemcpyDeviceToHost);
+  cudaMemcpyAsync(ip, z_d, 1*sizeof(double), cudaMemcpyDeviceToHost);
   cudaDeviceSynchronize();
 
   cudaFree(x_d);
@@ -111,7 +111,7 @@ int main() {
 
   double ip_ref, ip;
   double tt = omp_get_wtime();
-  inner_product(&ip_ref, x, y, N);
+  inner_product_ref(&ip_ref, x, y, N);
   printf("CPU Bandwidth = %f GB/s\n", 2*N*sizeof(double) / (omp_get_wtime()-tt)/1e9);
   tt = omp_get_wtime();
 
