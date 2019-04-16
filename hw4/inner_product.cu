@@ -67,8 +67,8 @@ __global__ void pointwise_mult_kernel(double* xy, const double* x, const double*
 }
 
 // Wrapper for inner product kernel
-void inner_product(double* ip, const double* x_d, const double* y_d, long N) {
-  double *x, *y, *xy_d, *z_d;
+void inner_product(double* ip, const double* x, const double* y, long N) {
+  double *x_d, *y_d, *xy_d, *z_d;
 
   cudaMalloc(&x_d, N*sizeof(double));
   cudaMalloc(&y_d, N*sizeof(double));
