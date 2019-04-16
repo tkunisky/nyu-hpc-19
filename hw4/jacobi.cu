@@ -96,13 +96,13 @@ void jacobi_iters_par(int N, int iters, double* f, double* u_prev, double* u) {
   swap(&u, &u_prev);
 }
 
+#define BLOCK_SIZE 1024
+
 __global__ void jacobi_kernel(double* u, const double* f, const double* u_prev, double h_sq, long N) {
   int i = blockIdx.x * blockDim.x + threadIdx.x;
   int j = blockIdx.y * blockDim.y + threadIdx.y;
 
   double val_left = 0.0, val_right = 0.0, val_up = 0.0, val_down = 0.0;
-
-  return val_left + val_right + val_up + val_down;
 
   if (i < N && j < N) {
     if (i > 0) {
@@ -118,7 +118,7 @@ __global__ void jacobi_kernel(double* u, const double* f, const double* u_prev, 
       val_right = u_prev[i * N + (j + 1)];
     }
 
-    u[N * j + i] = 0.25 * (h * u[N * j + i] + val_up + val_down + val_left + val_right);
+    u[N * j + i] = 0.25 * (h_sq * u[N * j + i] + val_up + val_down + val_left + val_right);
   }
 }
 
