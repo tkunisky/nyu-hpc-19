@@ -93,7 +93,7 @@ void inner_product(double* ip, const double* x_d, const double* y_d, long N) {
     long this_N = Nb;
     Nb = (Nb + BLOCK_SIZE - 1) / (BLOCK_SIZE);
     reduction_kernel<<<Nb,BLOCK_SIZE>>>(ip_d + Nb, ip_d, this_N);
-    ip_d += N;
+    ip_d += this_N;
   }
 
   cudaMemcpyAsync(ip, ip_d, 1*sizeof(double), cudaMemcpyDeviceToHost);
@@ -130,7 +130,6 @@ int main() {
 
   tt = omp_get_wtime();
   inner_product(&ip, x_d, y_d, N);
-  tt = omp_get_wtime();
   printf("GPU Bandwidth = %f GB/s\n", 2*N*sizeof(double) / (omp_get_wtime()-tt)/1e9);
   printf("Error = %f\n", fabs(ip - ip_ref));
 
