@@ -53,7 +53,6 @@ __global__ void reduction_kernel(double* sum, const double* a, long N) {
 // CPU matrix-vector multiplication implementation
 // Assume A is square and is stored in row major: A[i, j] = A[N * i + j]
 void matrix_vector_ref(double* Ax_ref, const double* A, const double* x, long N) {
-  #pragma omp parallel for schedule(static) reduction(+:sum)
   for (long i = 0; i < N; i++) {
     for (long j = 0; j < N; j++) {
       Ax_ref[i] += A[N * i + j] * x[j];
