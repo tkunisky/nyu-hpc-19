@@ -101,7 +101,7 @@ void inner_product(double* ip, const double* x_d, const double* y_d, long N) {
 }
 
 int main() {
-  long N = (1UL<<15);
+  long N = (1UL<<25);
 
   double *x, *y, *x_d, *y_d;
 
