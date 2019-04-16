@@ -98,6 +98,7 @@ void jacobi_iters_par(int N, int iters, double* f, double* u_prev, double* u) {
 
 #define BLOCK_SIZE 32
 
+// Kernel for one step of Jacobi iteration
 __global__ void jacobi_kernel(double* u, const double* f, const double* u_prev, double h_sq, long N) {
   int i = blockIdx.x * blockDim.x + threadIdx.x;
   int j = blockIdx.y * blockDim.y + threadIdx.y;
@@ -129,6 +130,7 @@ void jacobi_wrapper(double* u, const double* f, long N, long iters) {
   cudaMalloc(&f_d, N*N*sizeof(double));
   cudaMalloc(&u_prev_d, N*N*sizeof(double));
 
+  // Initialize both current and previous step to input
   cudaMemcpyAsync(u_d, u, N*N*sizeof(double), cudaMemcpyHostToDevice);
   cudaMemcpyAsync(u_prev_d, u, N*N*sizeof(double), cudaMemcpyHostToDevice);
   cudaMemcpyAsync(f_d, f, N*N*sizeof(double), cudaMemcpyHostToDevice);
@@ -139,12 +141,14 @@ void jacobi_wrapper(double* u, const double* f, long N, long iters) {
   dim3 dimBlock(BLOCK_SIZE, BLOCK_SIZE);
   dim3 dimGrid(N / BLOCK_SIZE + 1, N / BLOCK_SIZE + 1);
 
+  // Iterate kernel, copying current step to previous each time
   for (int k = 0; k < iters; k++) {
     jacobi_kernel<<<dimGrid,dimBlock>>>(u_d, f_d, u_prev_d, h_sq, N);
     cudaMemcpyAsync(u_prev_d, u_d, N*N*sizeof(double), cudaMemcpyDeviceToDevice);
     cudaDeviceSynchronize();
   }
 
+  // Return final result to host memory
   cudaMemcpyAsync(u, u_prev_d, N*N*sizeof(double), cudaMemcpyDeviceToHost);
   cudaDeviceSynchronize();
 
@@ -154,25 +158,24 @@ void jacobi_wrapper(double* u, const double* f, long N, long iters) {
 }
 
 int main(int argc, char** argv) {
-  // Setup
+  // General setup
   int N = atoi(argv[1]);
   int iters = atoi(argv[2]);
 
   Timer timer;
 
-  // Keep two steps of u since Jacobi needs to do a full pass on the current
-  // values.
-  double* u_prev = (double*) malloc(N * N * sizeof(double));
-  double* u = (double*) malloc(N * N * sizeof(double));
   double* f = (double*) malloc(N * N * sizeof(double));
-
   for (int i = 0; i < N * N; i++) {
-    u_prev[i] = 0.0;
-    u[i] = 0.0;
     f[i] = 1.0;
   }
 
   // CPU calculation
+  double* u_prev = (double*) malloc(N * N * sizeof(double));
+  double* u = (double*) malloc(N * N * sizeof(double));
+  for (int i = 0; i < N * N; i++) {
+    u_prev[i] = 0.0;
+    u[i] = 0.0;
+  }
 
   printf("CPU:\n");
   printf("Initial residual: %3f\n", residual(N, u, f));
