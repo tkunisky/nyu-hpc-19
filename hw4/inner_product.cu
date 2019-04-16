@@ -111,7 +111,7 @@ void inner_product(double* ip, const double* x, const double* y, long N) {
 int main() {
   long N = (1UL<<15);
 
-  double *x_d, *y_d;
+  double *x, *y;
 
   // Initialize vectors
   cudaMallocHost((void**)&x, N * sizeof(double));
@@ -131,7 +131,7 @@ int main() {
 
   // Get GPU inner product
   tt = omp_get_wtime();
-  inner_product(&ip, x_d, y_d, N);
+  inner_product(&ip, x, y, N);
   printf("GPU Bandwidth = %f GB/s\n", 2*N*sizeof(double) / (omp_get_wtime()-tt)/1e9);
   printf("Error = %f\n", fabs(ip - ip_ref));
 
