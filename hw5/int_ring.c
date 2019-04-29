@@ -50,7 +50,9 @@ double time_ring(long N, long data_size, MPI_Comm comm) {
   // End timed section
 
   if (rank == 0) {
-    printf("Error: %ld", msg[0] - N * num_processes * (num_processes - 1) / 2);
+    printf(
+      "Error: %ld\n", 
+      msg[0] - N * num_processes * (num_processes - 1) / 2);
   }
   
   free(msg);
@@ -82,7 +84,7 @@ int main(int argc, char** argv) {
   data_size = 1e6;
   tt = time_ring(N, data_size, comm);
   if (rank == 0) {
-    printf("Data size %ld:\n", data_size);
+    printf("\nData size %ld:\n", data_size);
     printf("Latency:   %e ms\n", tt / N * 1000);
     printf("Bandwidth: %e GB/s\n", data_size * N / tt / 1e9);
   }

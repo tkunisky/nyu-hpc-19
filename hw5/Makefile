@@ -1,14 +1,7 @@
-CXX = mpic++ # or mpicxx
-CXXFLAGS = -std=c++11 -O3 -march=native -fopenmp -std=c99
-
-TARGETS = $(basename $(wildcard *.c))
-
-all : $(TARGETS)
-
-%:%.c *.h
-	$(CXX) $(CXXFLAGS) $< $(LIBS) -o $@
+int_ring: int_ring.c
+	mpic++ -O3 -march=native $< -o $@
 
 clean:
-	-$(RM) $(TARGETS) *~
+	rm int_ring
 
-.PHONY: all, clean
+.PHONY: clean
