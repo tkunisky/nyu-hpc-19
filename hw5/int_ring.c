@@ -51,7 +51,7 @@ double time_ring(long N, long data_size, MPI_Comm comm) {
 
   if (rank == 0) {
     printf(
-      "Error: %ld\n", 
+      "  Error: %ld\n", 
       msg[0] - N * num_processes * (num_processes - 1) / 2);
   }
   
@@ -74,19 +74,21 @@ int main(int argc, char** argv) {
   long N = atoi(argv[1]);
   long data_size = 1;
 
-  double tt = time_ring(N, data_size, comm);
   if (rank == 0) {
     printf("Data size %ld:\n", data_size);
-    printf("Latency:   %e ms\n", tt / N * 1000);
-    printf("Bandwidth: %e GB/s\n", data_size * N / tt / 1e9);
+  }
+  double tt = time_ring(N, data_size, comm);
+  if (rank == 0) {
+    printf("  Latency:   %e ms\n", tt / N * 1000);
   }
 
-  data_size = 1e6;
-  tt = time_ring(N, data_size, comm);
+  data_size = 5 * 1e5;
   if (rank == 0) {
     printf("\nData size %ld:\n", data_size);
-    printf("Latency:   %e ms\n", tt / N * 1000);
-    printf("Bandwidth: %e GB/s\n", data_size * N / tt / 1e9);
+  }
+  tt = time_ring(N, data_size, comm);
+  if (rank == 0) {
+    printf("  Bandwidth: %e GB/s\n", data_size * N / tt / 1e9);
   }
 
   MPI_Finalize();
