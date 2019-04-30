@@ -72,8 +72,9 @@ int main(int argc, char** argv) {
     return 1;
   }
   long N = atoi(argv[1]);
-  long data_size = 1;
 
+  // Run small data test for latency estimation
+  long data_size = 1;
   if (rank == 0) {
     printf("Data size %ld:\n", data_size);
   }
@@ -82,6 +83,7 @@ int main(int argc, char** argv) {
     printf("  Latency:   %e ms\n", tt / N * 1000);
   }
 
+  // Run large data test for bandwidth estimation
   data_size = 5 * 1e5;
   if (rank == 0) {
     printf("\nData size %ld:\n", data_size);
