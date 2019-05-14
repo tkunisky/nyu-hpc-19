@@ -18,6 +18,7 @@ int main( int argc, char *argv[]) {
     return 1;
   }
   int N = atoi(argv[1]);
+  printf("Running with N = %d\n", N);
 
   int* vec = (int*)malloc(N*sizeof(int));
   // seed random number generator differently on every core
@@ -134,7 +135,7 @@ int main( int argc, char *argv[]) {
   MPI_Barrier(MPI_COMM_WORLD);
   double duration = MPI_Wtime() - start_time;
   if (rank == 0) {
-    printf("Time elapsed: %f seconds\n", duration);
+    printf("Time elapsed: %f seconds\n\n", duration);
   }
 
   // every process writes its result to a file
