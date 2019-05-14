@@ -18,7 +18,10 @@ int main( int argc, char *argv[]) {
     return 1;
   }
   int N = atoi(argv[1]);
-  printf("Running with N = %d\n", N);
+
+  if (rank == 0) {
+    printf("Running with N = %d\n", N);
+  }
 
   int* vec = (int*)malloc(N*sizeof(int));
   // seed random number generator differently on every core
