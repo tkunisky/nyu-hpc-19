@@ -9,7 +9,7 @@ cd $SCRATCH/nyu-hpc-19/hw6
 rm ssort
 make
 
-RUNDIR=$SCRATCH/nyu-hpc-19/hw6/run-${SLURM_JOB_ID/.*}
+RUNDIR=$SCRATCH/nyu-hpc-19/hw6/ssort-run-${SLURM_JOB_ID/.*}
 mkdir -p $RUNDIR
 cd $RUNDIR
 
