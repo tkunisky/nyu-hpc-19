@@ -89,25 +89,19 @@ int main(int argc, char* argv[]) {
 
     // Communicate ghost values
     MPI_Status status_top, status_bottom, status_left, status_right;
-    // Send/receive at top
+    // Send at top
     if (rank_i > 0) {
       MPI_Send(
         lu_new + (lN + 2), lN + 2, MPI_DOUBLE,
         pN * (rank_i - 1) + rank_j, 0, MPI_COMM_WORLD);
-      MPI_Recv(
-        lu_new, lN + 2, MPI_DOUBLE,
-        pN * (rank_i - 1) + rank_j, 0, MPI_COMM_WORLD, &status_top);
     }
-    // Send/receive at bottom
+    // Send at bottom
     if (rank_i < pN - 1) {
       MPI_Send(
         lu_new + lN * (lN + 2), lN + 2, MPI_DOUBLE,
         pN * (rank_i + 1) + rank_j, 0, MPI_COMM_WORLD);
-      MPI_Recv(
-        lu_new + (lN + 1) * (lN + 2), lN + 2, MPI_DOUBLE,
-        pN * (rank_i + 1) + rank_j, 0, MPI_COMM_WORLD, &status_bottom);
     }
-    // Send/receive at left
+    // Send at left
     if (rank_j > 0) {
       for (int m = 0; m < lN + 2; m++) {
         side_buffer[m] = lu_new[(lN + 2) * m + 1];
@@ -115,15 +109,8 @@ int main(int argc, char* argv[]) {
       MPI_Send(
         side_buffer, lN + 2, MPI_DOUBLE,
         pN * rank_i + (rank_j - 1), 0, MPI_COMM_WORLD);
-
-      MPI_Recv(
-        side_buffer, lN + 2, MPI_DOUBLE,
-        pN * rank_i + (rank_j - 1), 0, MPI_COMM_WORLD, &status_left);
-      for (int m = 0; m < lN + 2; m++) {
-        lu_new[(lN + 2) * m] = side_buffer[m];
-      }
     }
-    // Send/receive at right
+    // Send at right
     if (rank_j < pN - 1) {
       for (int m = 0; m < lN + 2; m++) {
         side_buffer[m] = lu_new[(lN + 2) * m + lN];
@@ -131,7 +118,31 @@ int main(int argc, char* argv[]) {
       MPI_Send(
         side_buffer, lN + 2, MPI_DOUBLE,
         pN * rank_i + (rank_j + 1), 0, MPI_COMM_WORLD);
+    }
 
+    // Receive at top
+    if (rank_i > 0) {
+      MPI_Recv(
+        lu_new, lN + 2, MPI_DOUBLE,
+        pN * (rank_i - 1) + rank_j, 0, MPI_COMM_WORLD, &status_top);
+    }
+    // Receive at bottom
+    if (rank_i < pN - 1) {
+      MPI_Recv(
+        lu_new + (lN + 1) * (lN + 2), lN + 2, MPI_DOUBLE,
+        pN * (rank_i + 1) + rank_j, 0, MPI_COMM_WORLD, &status_bottom);
+    }
+    // Receive at left
+    if (rank_j > 0) {
+      MPI_Recv(
+        side_buffer, lN + 2, MPI_DOUBLE,
+        pN * rank_i + (rank_j - 1), 0, MPI_COMM_WORLD, &status_left);
+      for (int m = 0; m < lN + 2; m++) {
+        lu_new[(lN + 2) * m] = side_buffer[m];
+      }
+    }
+    // Receive at right
+    if (rank_j < pN - 1) {
       MPI_Recv(
         side_buffer, lN + 2, MPI_DOUBLE,
         pN * rank_i + (rank_j + 1), 0, MPI_COMM_WORLD, &status_right);
